@@ -19,15 +19,16 @@ const TodoForm = ({ onAdd }) => {
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="Add a new todo"
+        placeholder="What needs to be done?"
+        required
       />
       <input
         type="text"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Add description (optional)"
+        placeholder="Add a description (optional)"
       />
-      <button type="submit">Add Todo</button>
+      <button type="submit">Add Task</button>
     </form>
   );
 };

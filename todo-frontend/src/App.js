@@ -52,6 +52,31 @@ function App() {
     }
   };
 
+  const updateTodo = async (id, updatedTodo) => {
+    setError('');
+    if (!updatedTodo.title.trim()) {
+      setError('Title is required');
+      return;
+    }
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTodo),
+      });
+      const data = await response.json();
+      if (data.status === 200) {
+        setTodos(todos.map(todo => todo.id === id ? data.data : todo));
+      } else {
+        setError(data.error || 'Error updating todo');
+      }
+    } catch (error) {
+      setError('Error updating todo');
+    }
+  };
+
   const toggleTodo = async (id) => {
     setError('');
     try {
@@ -104,6 +129,7 @@ function App() {
         todos={todos}
         onDelete={deleteTodo}
         onToggle={toggleTodo}
+        onUpdate={updateTodo}
       />
     </div>
   );
