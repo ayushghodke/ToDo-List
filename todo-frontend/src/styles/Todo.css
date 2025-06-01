@@ -1,0 +1,116 @@
+.todo-list {
+  margin-top: 20px;
+}
+
+.todo-item {
+  background: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo-item.completed {
+  opacity: 0.7;
+}
+
+.todo-item.completed h3 {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.todo-content {
+  flex: 1;
+  margin-right: 15px;
+}
+
+.todo-content h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1em;
+}
+
+.todo-content p {
+  margin: 5px 0 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.todo-actions button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.todo-actions button:first-child {
+  background: #4CAF50;
+  color: white;
+}
+
+.todo-actions button:nth-child(2) {
+  background: #2196F3;
+  color: white;
+}
+
+.todo-actions button:last-child {
+  background: #f44336;
+  color: white;
+}
+
+.todo-actions button:hover {
+  opacity: 0.9;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.edit-form input,
+.edit-form textarea {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.edit-form textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.edit-form button {
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.edit-form button:first-child {
+  background: #4CAF50;
+  color: white;
+}
+
+.edit-form button:last-child {
+  background: #f44336;
+  color: white;
+}
+
+.edit-form button:hover {
+  opacity: 0.9;
+} 
