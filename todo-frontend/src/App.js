@@ -8,6 +8,7 @@ const API_URL = 'http://localhost:5000/api/todos';
 function App() {
   const [todos, setTodos] = useState([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchTodos();
@@ -15,25 +16,34 @@ function App() {
 
   const fetchTodos = async () => {
     try {
+      setLoading(true);
+      setError('');
       const response = await fetch(API_URL);
-      const data = await response.json();
-      if (data.status === 200) {
-        setTodos(data.data);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      if (result.status === 200) {
+        setTodos(result.data || []);
       } else {
-        setError(data.error || 'Error fetching todos');
+        setError(result.error || 'Error fetching todos');
       }
     } catch (error) {
-      setError('Error fetching todos');
+      console.error('Error fetching todos:', error);
+      setError('Error fetching todos. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const addTodo = async (todo) => {
-    setError('');
-    if (!todo.title.trim()) {
-      setError('Title is required');
-      return;
-    }
     try {
+      setError('');
+      if (!todo.title.trim()) {
+        setError('Title is required');
+        return;
+      }
+
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -41,24 +51,31 @@ function App() {
         },
         body: JSON.stringify(todo),
       });
-      const data = await response.json();
-      if (data.status === 201) {
-        setTodos([...todos, data.data]);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.status === 201) {
+        setTodos(prevTodos => [result.data, ...prevTodos]);
       } else {
-        setError(data.error || 'Error adding todo');
+        setError(result.error || 'Error adding todo');
       }
     } catch (error) {
-      setError('Error adding todo');
+      console.error('Error adding todo:', error);
+      setError('Error adding todo. Please try again.');
     }
   };
 
   const updateTodo = async (id, updatedTodo) => {
-    setError('');
-    if (!updatedTodo.title.trim()) {
-      setError('Title is required');
-      return;
-    }
     try {
+      setError('');
+      if (!updatedTodo.title.trim()) {
+        setError('Title is required');
+        return;
+      }
+
       const response = await fetch(`${API_URL}/${id}`, {
         method: 'PUT',
         headers: {
@@ -66,57 +83,76 @@ function App() {
         },
         body: JSON.stringify(updatedTodo),
       });
-      const data = await response.json();
-      if (data.status === 200) {
-        setTodos(todos.map(todo => todo.id === id ? data.data : todo));
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.status === 200) {
+        setTodos(prevTodos => 
+          prevTodos.map(todo => todo.id === id ? result.data : todo)
+        );
       } else {
-        setError(data.error || 'Error updating todo');
+        setError(result.error || 'Error updating todo');
       }
     } catch (error) {
-      setError('Error updating todo');
+      console.error('Error updating todo:', error);
+      setError('Error updating todo. Please try again.');
     }
   };
 
   const toggleTodo = async (id) => {
-    setError('');
     try {
+      setError('');
       const todo = todos.find(t => t.id === id);
-      const response = await fetch(`${API_URL}/${id}`, {
+      if (!todo) return;
+
+      const response = await fetch(`${API_URL}/${id}/toggle`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          title: todo.title, 
-          description: todo.description, 
-          completed: !todo.completed 
-        }),
       });
-      const data = await response.json();
-      if (data.status === 200) {
-        setTodos(todos.map(t => t.id === id ? data.data : t));
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.status === 200) {
+        setTodos(prevTodos => 
+          prevTodos.map(t => t.id === id ? result.data : t)
+        );
       } else {
-        setError(data.error || 'Error updating todo');
+        setError(result.error || 'Error toggling todo');
       }
     } catch (error) {
-      setError('Error updating todo');
+      console.error('Error toggling todo:', error);
+      setError('Error toggling todo. Please try again.');
     }
   };
 
   const deleteTodo = async (id) => {
-    setError('');
     try {
+      setError('');
       const response = await fetch(`${API_URL}/${id}`, {
         method: 'DELETE',
       });
-      const data = await response.json();
-      if (data.status === 200) {
-        setTodos(todos.filter(t => t.id !== id));
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (result.status === 200) {
+        setTodos(prevTodos => prevTodos.filter(t => t.id !== id));
       } else {
-        setError(data.error || 'Error deleting todo');
+        setError(result.error || 'Error deleting todo');
       }
     } catch (error) {
-      setError('Error deleting todo');
+      console.error('Error deleting todo:', error);
+      setError('Error deleting todo. Please try again.');
     }
   };
 
@@ -125,12 +161,16 @@ function App() {
       <h1>Todo App</h1>
       <TodoForm onAdd={addTodo} />
       {error && <div className="error">{error}</div>}
-      <TodoList
-        todos={todos}
-        onDelete={deleteTodo}
-        onToggle={toggleTodo}
-        onUpdate={updateTodo}
-      />
+      {loading ? (
+        <div className="loading">Loading todos...</div>
+      ) : (
+        <TodoList
+          todos={todos}
+          onDelete={deleteTodo}
+          onToggle={toggleTodo}
+          onUpdate={updateTodo}
+        />
+      )}
     </div>
   );
 }
