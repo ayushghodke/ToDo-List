@@ -36,6 +36,9 @@ initializeDatabase();
 app.get('/api/test', (req, res) => {
   res.json({ message: 'API is working!' });
 });
+app.get('/', (req, res) => {
+  res.json({ message: 'API is working!' });
+});
 
 // Routes
 app.use('/api/todos', todoRoutes);
