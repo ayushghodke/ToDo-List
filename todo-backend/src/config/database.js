@@ -1,14 +1,12 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
-const sequelize = new Sequelize(process.env.DATABASE_URL || {
-    database: process.env.DB_NAME || 'todo_app',
-    username: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '0000',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Use the full DATABASE_URL if provided, otherwise use individual parameters
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    logging: !isProduction ? console.log : false,
     pool: {
         max: 5,
         min: 0,
@@ -16,10 +14,13 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || {
         idle: 10000
     },
     dialectOptions: {
-        ssl: process.env.NODE_ENV === 'production' ? {
+        ssl: {
             require: true,
             rejectUnauthorized: false
-        } : false
+        }
+    },
+    retry: {
+        max: 3
     }
 });
 
@@ -28,12 +29,22 @@ const testConnection = async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connection has been established successfully.');
+        console.log('Environment:', process.env.NODE_ENV || 'development');
+        console.log('Region: Oregon (US West)');
+        
+        // Log connection info (without sensitive data)
+        const dbUrl = new URL(process.env.DATABASE_URL);
+        console.log('Database:', dbUrl.pathname.substring(1));
+        console.log('Host:', dbUrl.hostname);
     } catch (error) {
         console.error('Unable to connect to the database:', error);
         if (error.original) {
             console.error('Original error:', error.original);
         }
-        process.exit(1); // Exit if database connection fails
+        // Don't exit in production, let the application handle reconnection
+        if (!isProduction) {
+            process.exit(1);
+        }
     }
 };
 

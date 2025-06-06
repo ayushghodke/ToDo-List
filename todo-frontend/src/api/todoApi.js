@@ -5,12 +5,11 @@ const getApiUrl = () => {
         return baseUrl;
     }
     // Default to localhost in development
-    return window.location.hostname === 'localhost' 
-        ? 'http://localhost:5000/api'
-        : '/api'; // In production, use relative path
+    return 'http://localhost:5000/api';
 };
 
 const API_URL = getApiUrl();
+console.log('API URL:', API_URL); // For debugging
 
 const defaultHeaders = {
     'Content-Type': 'application/json',
