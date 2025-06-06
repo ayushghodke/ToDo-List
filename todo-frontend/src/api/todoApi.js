@@ -2,6 +2,7 @@
 const getApiUrl = () => {
     // Always use the environment variable in production
     if (process.env.NODE_ENV === 'production') {
+        // Remove any trailing slashes to ensure consistent URL formatting
         return 'https://todo-backend-jhps.onrender.com/api';
     }
     // Use localhost in development
@@ -9,12 +10,12 @@ const getApiUrl = () => {
 };
 
 const API_URL = getApiUrl();
+console.log('Environment:', process.env.NODE_ENV);
 console.log('API URL:', API_URL); // For debugging
 
 const defaultHeaders = {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Access-Control-Allow-Origin': '*'
+    'Accept': 'application/json'
 };
 
 const handleResponse = async (response) => {
@@ -45,7 +46,6 @@ const fetchWithErrorHandling = async (url, options = {}) => {
                 ...defaultHeaders,
                 ...options.headers
             },
-            credentials: 'include',
             mode: 'cors'
         });
         
