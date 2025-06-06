@@ -1,4 +1,16 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Get the API URL from environment variable or use a default
+const getApiUrl = () => {
+    const baseUrl = process.env.REACT_APP_API_URL;
+    if (baseUrl) {
+        return baseUrl;
+    }
+    // Default to localhost in development
+    return window.location.hostname === 'localhost' 
+        ? 'http://localhost:5000/api'
+        : '/api'; // In production, use relative path
+};
+
+const API_URL = getApiUrl();
 
 const todoApi = {
   async getAllTodos() {
