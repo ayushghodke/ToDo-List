@@ -1,10 +1,10 @@
 // Get the API URL from environment variable or use a default
 const getApiUrl = () => {
-    const baseUrl = process.env.REACT_APP_API_URL;
-    if (baseUrl) {
-        return baseUrl;
+    // Always use the environment variable in production
+    if (process.env.NODE_ENV === 'production') {
+        return 'https://todo-backend-jhps.onrender.com/api';
     }
-    // Default to localhost in development
+    // Use localhost in development
     return 'http://localhost:5000/api';
 };
 
