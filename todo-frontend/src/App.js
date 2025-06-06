@@ -4,7 +4,7 @@ import TodoList from './components/TodoList';
 import './App.css';
 
 // const API_URL = 'http://localhost:5000/api/todos';
-const API_URL = 'https://todo-backend-jhps.onrender.com/api';
+const API_URL = 'https://todo-backend-jhps.onrender.com/api/todos';
 
 function App() {
   const [todos, setTodos] = useState([]);

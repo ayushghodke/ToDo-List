@@ -3,7 +3,7 @@ const getApiUrl = () => {
     // Always use the environment variable in production
     if (process.env.NODE_ENV === 'production') {
         // Remove any trailing slashes to ensure consistent URL formatting
-        return 'https://todo-backend-jhps.onrender.com/api';
+        return 'https://todo-backend-jhps.onrender.com/api/todos';
     }
     // Use localhost in development
     return 'http://localhost:5000/api';
