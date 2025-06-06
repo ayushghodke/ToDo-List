@@ -3,7 +3,8 @@ import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import './App.css';
 
-const API_URL = 'http://localhost:5000/api/todos';
+// const API_URL = 'http://localhost:5000/api/todos';
+const API_URL = 'https://todo-backend-jhps.onrender.com/api';
 
 function App() {
   const [todos, setTodos] = useState([]);
