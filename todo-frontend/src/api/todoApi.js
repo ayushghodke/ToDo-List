@@ -13,57 +13,78 @@ console.log('API URL:', API_URL); // For debugging
 
 const defaultHeaders = {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Accept': 'application/json',
+    'Access-Control-Allow-Origin': '*'
 };
 
 const handleResponse = async (response) => {
+    console.log('Response status:', response.status);
+    console.log('Response headers:', response.headers);
+    
     if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error.message || `HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        try {
+            const error = JSON.parse(errorText);
+            throw new Error(error.message || `HTTP error! status: ${response.status}`);
+        } catch (e) {
+            throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+        }
     }
     return response.json();
 };
 
+const fetchWithErrorHandling = async (url, options = {}) => {
+    try {
+        console.log('Fetching URL:', url);
+        console.log('Fetch options:', options);
+        
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                ...defaultHeaders,
+                ...options.headers
+            },
+            credentials: 'include',
+            mode: 'cors'
+        });
+        
+        return handleResponse(response);
+    } catch (error) {
+        console.error('Fetch error:', error);
+        throw error;
+    }
+};
+
 const todoApi = {
     async getAllTodos() {
-        const response = await fetch(`${API_URL}/todos`, {
-            headers: defaultHeaders
-        });
-        return handleResponse(response);
+        return fetchWithErrorHandling(`${API_URL}/todos`);
     },
 
     async createTodo(todo) {
-        const response = await fetch(`${API_URL}/todos`, {
+        return fetchWithErrorHandling(`${API_URL}/todos`, {
             method: 'POST',
-            headers: defaultHeaders,
             body: JSON.stringify(todo),
         });
-        return handleResponse(response);
     },
 
     async updateTodo(id, todo) {
-        const response = await fetch(`${API_URL}/todos/${id}`, {
+        return fetchWithErrorHandling(`${API_URL}/todos/${id}`, {
             method: 'PUT',
-            headers: defaultHeaders,
             body: JSON.stringify(todo),
         });
-        return handleResponse(response);
     },
 
     async deleteTodo(id) {
-        const response = await fetch(`${API_URL}/todos/${id}`, {
+        return fetchWithErrorHandling(`${API_URL}/todos/${id}`, {
             method: 'DELETE',
-            headers: defaultHeaders
         });
-        return handleResponse(response);
     },
 
     async toggleTodo(id) {
-        const response = await fetch(`${API_URL}/todos/${id}/toggle`, {
+        return fetchWithErrorHandling(`${API_URL}/todos/${id}/toggle`, {
             method: 'PUT',
-            headers: defaultHeaders
         });
-        return handleResponse(response);
     }
 };
 
